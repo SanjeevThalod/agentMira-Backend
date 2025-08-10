@@ -9,7 +9,7 @@ const cookieOptions = {
   httpOnly: true, 
   secure: process.env.NODE_ENV === "production", 
   sameSite: "none",
-  maxAge: 7 * 24 * 60 * 60 * 1000 
+  maxAge: 3 * 24 * 60 * 60 * 100
 };
 
 export const loginController = async (req, res) => {
@@ -22,9 +22,11 @@ export const loginController = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "3h" });
 
     // Set token as cookie
+    
+    console.log(process.env.JWT_SECRET, token);
     res.cookie("token", token, cookieOptions);
 
     res.json({ message: "Login successful", user });
@@ -49,7 +51,7 @@ export const signupController = async (req, res) => {
     const newUser = new User({ name, email, password: hashedPassword });
     await newUser.save();
 
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "3h" });
 
     // Set token as cookie
     res.cookie("token", token, cookieOptions);
@@ -71,5 +73,18 @@ export const preferncesController = async (req,res)=>{
     res.json({ message: 'Preferences updated', preferences: user.preferences });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
+  }
+}
+
+export const messageController = async (req,res)=>{
+  try {
+    const userId = req.user.id;
+    const messages = req.body;
+
+    const user = await User.findByIdAndUpdate(userId, {messages},{new:true});
+    if(!user) return res.status(404).json({message:"User not Found"});
+    res.status(200).json({message:"Updated",messages: user.messages});
+  } catch (error) {
+    res.status(500).json(error);
   }
 }

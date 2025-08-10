@@ -16,19 +16,11 @@ app.use(cookieParser());
 
 // CORS
 const allowedOrigins = [
-  'http://localhost:3000',
   'http://localhost:5173',
   'https://agent-mira-frontend.vercel.app',
 ];
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, origin);
-    } else {
-      return callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: allowedOrigins,
   credentials: true,
 }));
 

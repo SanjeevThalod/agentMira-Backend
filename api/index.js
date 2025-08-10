@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import mongoose from "mongoose";
-import app from "../server.js"; // adjust path if needed
+import app from "../server.js";
 
 let isConnected = false;
 

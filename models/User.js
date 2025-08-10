@@ -15,7 +15,14 @@ const userSchema = new mongoose.Schema({
     max_size_sqft: { type: Number, default: null },
     min_price: { type: Number, default: null },
     max_price: { type: Number, default: null }
-  }
+  },
+  messages: [
+    {
+      from: { type: String, enum: ['bot', 'user'] },
+      text: { type: String, default: '' },
+      properties: { type: Array, default: [] }
+    }
+  ]
 });
 
 const User = mongoose.model("User",userSchema);
